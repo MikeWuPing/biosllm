@@ -1,0 +1,33 @@
+第三方组件与资源声明（biosllm 发布包）
+================================================================
+
+本发布包只包含二进制品与文档，不包含源代码。包内各组件的来源与授权
+如下；除特别说明外，biosllm 的专有许可不授予这些组件任何额外权利。
+
+1. biosllm.efi —— 专有软件
+   版权所有 (c) 2026 Mike Wu。Free 版免费授权个人用户用于个人、非商业
+   用途；商业用途与 Pro 版需事先取得作者书面授权。全文见随包
+   biosllm-LICENSE.txt。
+
+2. uime.efi —— 专有软件（汉字输入法驱动）
+   免费授权个人用户用于个人、非商业用途；商业用途需另行取得书面授权。
+   全文见随包 uIME-LICENSE.txt。
+
+3. EFI/BOOT/BOOTX64.EFI 与 Shell.efi —— EDK2 UEFI Shell
+   来自 TianoCore EDK2 项目（https://github.com/tianocore/edk2），
+   按 BSD-2-Clause-Patent 授权分发，完整条款见随包
+   EDK2-Shell-BSD-2-Clause-Patent.txt（与上游 License.txt 一致）。
+   版权 (c) 2019, TianoCore and contributors。
+
+4. 界面与字体资源
+   界面基于 LVGL 9.2.2（MIT）构建，其移植层内嵌于 biosllm.efi。
+   随包使用的 subsetted 中文字库（字形源自 Microsoft SimSun 与
+   Segoe UI Symbol）及个别美术资源（鼠标箭头等）不在 MIT 与本包
+   专有许可的覆盖范围内：这些资源的字形权利归其各自权利人所有，
+   本包只随 biosllm.efi 一并分发、不单独授权、不得摘取复用。
+
+5. 根证书
+   certs/ 下的 .der 文件为对应证书机构公开发布的根证书（当前为
+   DigiCert Global Root G2），按其原发布条款使用。
+
+联系方式：mikewuping@163.com（Mike Wu）

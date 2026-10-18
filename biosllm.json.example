@@ -1,0 +1,56 @@
+{
+  "_comment": "biosllm 配置模板。复制成同目录的 biosllm.json，把 api_key 换成真实密钥。biosllm.json 已被 .gitignore 排除——程序只读这一个名字，没有按环境分叉的变体：QEMU 里跑的和真机上跑的是同一份配置，只是 provider 不同。",
+  "_provider_note": "provider 选择下面 providers 里的哪一个，换模型只改这一行。运行时也可以用 /model 临时切换，不写回文件。",
+  "_format_note": "这一版只向 format=openai 的 provider 发送工具定义。format=anthropic 可以对话，但模型没有工具可调，问硬件只能凭常识回答——要查机器就用 openai 端点。",
+  "provider": "deepseek",
+  "providers": {
+    "deepseek": {
+      "_note": "DeepSeek 官方 OpenAI 兼容端点。付费但便宜，实测工具调用正常。需要 certs/ 里有 DigiCert Global Root G2（已随包提供）。",
+      "format": "openai",
+      "base_url": "https://api.deepseek.com",
+      "api_key": "sk-REPLACE_ME",
+      "model": "deepseek-flash"
+    },
+    "deepseek-anthropic": {
+      "_note": "同一个服务商的 Anthropic 兼容端点：认证头是 x-api-key、路径是 /messages。对话可用，工具不可用（原因见上面的 _format_note）。",
+      "format": "anthropic",
+      "base_url": "https://api.deepseek.com/anthropic",
+      "api_key": "sk-REPLACE_ME",
+      "model": "deepseek-flash"
+    },
+    "nemotron": {
+      "_note": "免费。固定模型而非路由器，回复可复现；120B MoE / 262K 上下文 / 支持工具调用。需要 certs/ 里有 GTS Root R4（自行从 openrouter.ai 导出）。",
+      "format": "openai",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key": "sk-or-v1-REPLACE_ME",
+      "model": "nvidia/nemotron-3-super-120b-a12b:free"
+    },
+    "openrouter-free": {
+      "_note": "免费（prompt / completion 定价均为 0）。它本身是个路由器：每次调用从全部免费模型里挑一个可用的，某个模型 429 时能自动绕开，所以最省心。代价有两条——回复不可复现，而且会偶尔挑到不肯回答的模型（实测“你好”被回成“User Safety: safe”）。拿它当默认值会让同一句话时好时坏；需要“某个模型挂了也能用”时再切过来。",
+      "format": "openai",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key": "sk-or-v1-REPLACE_ME",
+      "model": "openrouter/free"
+    },
+    "local-mock": {
+      "_note": "本机确定性后端，不需要任何 key：先跑 `python tools/mock_llm.py`，QEMU 里 10.0.2.2 就是宿主机。日常回归与自动断言走这个——不联网、不计费、回复可控。",
+      "format": "openai",
+      "base_url": "http://10.0.2.2:8787/v1",
+      "api_key": "not-needed",
+      "model": "mock"
+    }
+  },
+  "request": {
+    "_max_tokens_note": "别调太小。免费档几乎都是推理模型，先输出思考再输出正文，预算太小会让正文为空（实测 80 不够、400 够）。",
+    "max_tokens": 2048,
+    "stream": true,
+    "timeout_sec": 180,
+    "_context_note": "上下文预算，四项都可省略。context_window 是这个模型在服务商那里的窗口（token），写了会让压缩更早发生，小窗口模型必须写；compact_at 是触发压缩的百分比（30-95）；compact_max_tokens 是摘要本身允许的长度——摘要比原文还长就没有意义。",
+    "context_window": 0,
+    "compact_at": 80,
+    "compact_max_tokens": 800
+  },
+  "_allow_shell_note": "allow_shell 打开 run_command 工具：模型可以让固件跑一条 UEFI Shell 命令（dh、pci、acpiview…）并读回输出。它是唯一能改变机器状态的工具，所以默认关着——提示词说不动的权限才算权限。打开的两个前提：这里写 true，且本程序是被 Shell 启动的（run_command 需要借 Shell 来跑命令）。",
+  "allow_shell": false,
+  "system": "你是 biosllm，运行在 UEFI 固件里的助手。回答简洁。"
+}

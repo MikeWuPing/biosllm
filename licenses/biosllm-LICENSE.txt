@@ -1,0 +1,105 @@
+biosllm 软件许可条款（Free 版）
+biosllm Software Licence Terms (Free Edition)
+
+版权所有 (c) 2026 Mike Wu。保留所有权利。
+Copyright (c) 2026 Mike Wu. All rights reserved.
+
+biosllm 是专有软件，不是开源软件。本文件说明 Free 版的授权范围；它不授予任何
+再分发权利，也不构成对源码的发布。
+biosllm is proprietary software, not open source. This file states the terms of
+the Free edition. It grants no right to redistribute, and it does not publish
+the source.
+
+
+一、Free 版授权（个人、非商业用途）
+1. Free Edition licence (individual, non-commercial use)
+
+在遵守本条款的前提下，作者授予自然人一项免费的、非独占的、不可转让的许可：
+1.1 在您本人拥有或合法使用的机器上运行 biosllm Free 版的二进制品（biosllm.efi）
+    及其随包文件（配置模板、技能、根证书、产品手册）；
+1.2 为自用而修改配置文件与技能文本。
+
+Subject to these terms, the author grants an individual a free, non-exclusive,
+non-transferable licence to:
+1.1 run the biosllm Free edition binary (biosllm.efi) and the files shipped with
+    it (config template, skills, root certificates, product manual) on machines
+    you own or are lawfully entitled to use;
+1.2 modify the configuration file and the skill texts for your own use.
+
+
+二、限制
+2. Restrictions
+
+未经作者事先书面许可，您不得：
+2.1 再分发、出售、出租、出借、转授权本软件或其任何部分，包括随硬件、随服务、
+    或以镜像、安装盘、网络下载等形式提供给第三方；
+2.2 将本软件或其输出作为收费服务的一部分提供；
+2.3 在企业、机构或其他组织环境中批量部署或用于生产经营活动（此即"商业用途"，
+    需另行取得书面授权）；
+2.4 移除或隐藏本软件中的版权声明、版本标识与许可提示；
+2.5 反编译、反汇编或以其他方式试图获取源码（法律明确允许的情形除外）；
+2.6 声称本软件是开源软件，或以本软件的名义发布任何衍生作品。
+
+Without the author's prior written permission, you may not:
+2.1 redistribute, sell, rent, lend or sublicense the software or any part of it,
+    including bundling it with hardware or a service, or supplying it to third
+    parties as an image, install medium or download;
+2.2 offer the software or its output as part of a paid service;
+2.3 deploy it in bulk, or use it for business operations, inside a company,
+    institution or any other organisation (this is "commercial use" and needs a
+    separate written licence);
+2.4 remove or obscure copyright notices, version identifiers or licence notices;
+2.5 decompile, disassemble or otherwise attempt to derive the source code,
+    except where the law expressly permits it;
+2.6 describe the software as open source, or publish derivative works under its
+    name.
+
+
+三、商业用途与 Pro 版
+3. Commercial use and the Pro edition
+
+3.1 商业用途，以及 Pro 版（面向企业批量部署、受控写回、审计与报告汇总等能力）
+    的使用，均需事先取得作者的书面授权。Pro 版尚未发布。
+3.2 授权方式、报价与支持条款请联系：mikewuping@163.com。
+
+3.1 Commercial use, and use of the Pro edition (fleet deployment, controlled
+    write-back, audit and report aggregation), require the author's prior
+    written licence. The Pro edition has not been released.
+3.2 For licensing, pricing and support, contact mikewuping@163.com.
+
+
+四、第三方组件
+4. Third-party components
+
+本软件以仓库内的 LvglPkg（LVGL 9.2.2 的 UEFI 移植层）构建。该包随附的第三方资源
+（中文字库、字体、美术资源）各有其授权限制，不因本文件而获得任何额外权利。
+
+The software is built against LvglPkg, the LVGL 9.2.2 port layer kept in the
+same repository. Its bundled third-party assets (CJK fonts, typefaces,
+artwork) carry their own restrictions and gain no rights from this file.
+
+
+五、无担保与责任限制
+5. No warranty, limitation of liability
+
+本软件按"现状"提供，不附带任何明示或默示的担保，包括但不限于适销性、特定用途
+适用性与不侵权担保。本软件运行于固件层，可读物理内存与固件变量，使用者应自行
+评估风险。在适用法律允许的最大范围内，作者不对任何直接、间接、偶然或后果性损害
+承担责任，包括数据丢失、设备损坏与业务中断。
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IT RUNS AT THE FIRMWARE
+LEVEL AND CAN READ OR WRITE PHYSICAL MEMORY AND FIRMWARE VARIABLES; ASSESS THE
+RISK YOURSELF. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE AUTHOR
+SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL OR CONSEQUENTIAL
+DAMAGES, INCLUDING LOSS OF DATA, DAMAGE TO EQUIPMENT AND BUSINESS INTERRUPTION.
+
+
+六、终止
+6. Termination
+
+违反本条款即自动终止本许可，您应停止使用并删除本软件的全部副本。
+
+Any breach of these terms terminates this licence automatically; you must stop
+using the software and delete all copies.

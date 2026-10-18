@@ -1,0 +1,101 @@
+uIME 许可条款
+Copyright (c) 2026 Mike Wu. All rights reserved.
+保留所有权利。
+
+════════════════════════════════════════════════════════════════════════
+中文（与英文有歧义时，以本中文文本为准）
+════════════════════════════════════════════════════════════════════════
+
+uIME 是**专有软件，不开源**。
+
+1. 源代码
+   本项目的源代码（包含但不限于 `UimePkg/`、`tools/`、`tests/`、构建脚本与随附文档）
+   为作者的未公开专有作品。作者未授予任何复制、修改、编译、分发、再许可、
+   公开传播或用于衍生作品的权利。未经作者事先书面许可，不得将其全部或部分
+   提供给第三方。
+
+2. 二进制品：个人用户免费
+   作者对外发布的 uIME 可执行镜像（`*.efi` 及其发行包）**免费授权个人用户
+   用于个人、非商业用途**。在此范围内，你可以自由下载、安装、运行，
+   并在自己拥有的设备之间转移副本。
+
+3. 商业用途需另行授权
+   任何商业用途均需事先取得作者的书面商业授权，包括但不限于：
+   随产品、硬件或服务分发或预装；作为收费服务的一部分提供；
+   在企业、机构或组织内部批量或以生产目的部署使用；用于提供外包、
+   集成、技术支持等有偿服务。
+
+4. 再分发
+   不得将二进制品重新打包、改名、拆分、收费转售，或声称对其拥有权利。
+   发行包应保持原样，并保留本许可文件与版权声明。
+
+5. 第三方组件
+   随源码附带的拼音词库数据来自 `mozillazg/pinyin-data`、
+   `mozillazg/phrase-pinyin-data` 与 `fxsjy/jieba`（均为 MIT 许可），
+   其版权归各自作者；`LvglPkg`（LVGL 的 UEFI 移植层，MIT）为独立项目，
+   不属于本许可的授权范围，其随附的字体与美术资源另有其自身条款。
+   本许可不改变上述第三方组件的许可条款。
+
+6. 无担保与责任限制
+   本软件按「现状」提供，不附带任何明示或默示的担保，包括但不限于
+   适销性、特定用途适用性与不侵权的担保。在任何情况下，作者均不对
+   因使用或无法使用本软件而产生的任何直接、间接、附带或后果性损失
+   （包括数据丢失、设备损坏或业务中断）承担责任。
+
+7. 终止
+   违反上述任一条款即自动终止本许可授予的权利。终止后应停止使用并
+   删除全部副本。
+
+════════════════════════════════════════════════════════════════════════
+English (the Chinese text above prevails in case of any conflict)
+════════════════════════════════════════════════════════════════════════
+
+uIME is **proprietary software and is not open source**.
+
+1. Source code
+   The source code of this project (including but not limited to `UimePkg/`,
+   `tools/`, `tests/`, the build scripts and the accompanying documentation)
+   is unpublished proprietary work of the author. No right is granted to copy,
+   modify, compile, distribute, sublicense, publicly communicate or use it to
+   create derivative works. It may not be passed on to a third party, in whole
+   or in part, without the author's prior written permission.
+
+2. Binaries: free for individual users
+   The uIME executable images (`*.efi`) and release packages published by the
+   author are **licensed free of charge to individual users for personal,
+   non-commercial use**. Within that scope you may download, install and run
+   them, and move copies between devices you own.
+
+3. Commercial use requires a separate licence
+   Any commercial use requires the author's prior written commercial licence,
+   including without limitation: distributing or bundling with a product,
+   hardware or service; offering as part of a paid service; deploying in bulk
+   or for production purposes inside a company, institution or organisation;
+   and use in paid outsourcing, integration or support work.
+
+4. Redistribution
+   Binaries may not be repackaged, renamed, split, resold for a fee, or
+   presented as your own. Release packages must be passed on unmodified, with
+   this licence and the copyright notice kept intact.
+
+5. Third-party components
+   The pinyin dictionary data shipped with the source comes from
+   `mozillazg/pinyin-data`, `mozillazg/phrase-pinyin-data` and `fxsjy/jieba`
+   (all MIT); their copyright belongs to their respective authors. `LvglPkg`
+   (the LVGL port layer for UEFI, MIT) is a separate project and is not
+   licensed under this document — the fonts and artwork it ships carry their
+   own terms. This licence does not alter the terms of any of those
+   third-party components.
+
+6. No warranty, limited liability
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL OR CONSEQUENTIAL
+   DAMAGES (INCLUDING DATA LOSS, DEVICE DAMAGE OR BUSINESS INTERRUPTION)
+   ARISING FROM THE USE OF OR INABILITY TO USE THE SOFTWARE.
+
+7. Termination
+   Any breach of the terms above terminates the rights granted here
+   automatically. On termination you must stop using the software and delete
+   all copies.
