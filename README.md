@@ -1,6 +1,6 @@
 # biosllm — UEFI 固件内的大模型终端
 
-> **biosllm** 是一款运行在 UEFI 固件环境里的对话式硬件助手：不需要操作系统、不需要驱动安装包，固件一启动就是一个中文对话框，能问这台机器的事。模型在云端，工具在固件里——它把固件自己的接口做成 13 个只读工具交给模型，模型决定调哪个，程序回灌固件的真实输出。
+> **biosllm** 是一款运行在 UEFI 固件环境里的对话式硬件助手：不需要操作系统、不需要驱动安装包，固件一启动就是一个中文对话框，能问这台机器的事。模型在云端，工具在固件里——它把固件自己的接口做成 18 个工具交给模型（16 个只读，外加一个写启动卷文件的和一条 Shell 命令），模型决定调哪个，程序回灌固件的真实输出。
 >
 > **License**：专有软件，不是开源软件。Free 版**免费授权个人用户**用于个人、非商业用途；商业用途与 Pro 版请联系作者（Mike Wu，mikewuping@163.com）。
 
@@ -13,6 +13,8 @@
 - **先于操作系统看清一台机器**：机器进不了系统、或还没有系统时，固件是唯一能运行的东西。ACPI 表、PCI 设备树、SMBIOS、内存映射、块设备、网卡与 IP、EFI 变量，全部现场可读。
 - **答案来自这一台机器，不是型号推测**：每个工具返回固件当场给出的原始数据；取不到就报"取不到"，不编造。
 - **中文提问**：配合随包的 `uime.efi` 输入法，敲拼音选字即可，宿主程序一行不用改。
+- **连不上网也能问**：网络不通或配置缺失时，问题走关键词路由到只读工具，答得出来就直接答，界面上明说这是离线作答。
+- **出问题时一键取证**：`/diag` 把固件、网络、配置（密钥脱敏）、上一轮往返、上下文水位写成一个文件，拷出来就能开 support case。
 - **模型可换**：DeepSeek、OpenRouter 免费池、本地 mock 都行，一个 JSON 文件改一行。
 
 ## 下载与启动
@@ -21,10 +23,10 @@
 
 | 文件 | 用途 |
 |---|---|
-| `biosllm-boot-0.1.0.105.iso` | 用 Rufus 写入 U 盘（「ISO 镜像模式」），或刻成光盘，开机选 UEFI 启动 |
-| `biosllm-usb-0.1.0.105.zip` | 解压到 FAT32 U 盘根目录（**推荐**：U 盘可写，能填自己的 api_key） |
+| `biosllm-boot-0.1.0.218.iso` | 用 Rufus 写入 U 盘（「ISO 镜像模式」），或刻成光盘，开机选 UEFI 启动 |
+| `biosllm-usb-0.1.0.218.zip` | 解压到 FAT32 U 盘根目录（**推荐**：U 盘可写，能填自己的 api_key） |
 | `biosllm.efi` / `uime.efi` | 只要程序本体时单独取用 |
-| `biosllm-manual.html` | 产品手册（单文件，图文，12 节） |
+| `biosllm-manual.html` | 产品手册（单文件，图文，15 节） |
 
 启动路径：固件 → UEFI Shell（随包）→ 自动执行 `startup.nsh` → 加载输入法 → 进入 biosllm。Secure Boot 打开的机器需要先在固件里关闭，或给应用签名。
 
@@ -58,13 +60,14 @@
 
 https 需要根证书：DeepSeek 用 DigiCert Global Root G2（`certs/` 已带）；换其他服务时把对端证书链的根导出成 DER 放进 `certs/` 即可。
 
-## 工具清单（13 个，全部只读）
+## 工具清单（14 个）
 
 | 工具 | 返回什么 |
 |---|---|
 | `list_dir` / `read_file` | 启动卷上的目录与文本文件 |
 | `read_env` | EFI 变量：`BootOrder`、`SecureBoot`、`SetupMode`… |
 | `read_skill` | 技能全文 |
+| `dump_hii` | 固件 Setup 的界面清单与表单名字（只报界面，不报值） |
 | `dump_smbios` | BIOS 厂商版本、整机型号、内存条 |
 | `dump_memmap` | EFI 内存映射 |
 | `dump_acpi` | ACPI 表目录（签名、长度、修订、OEM id） |
@@ -72,8 +75,12 @@ https 需要根证书：DeepSeek 用 DigiCert Global Root G2（`certs/` 已带�
 | `read_mem` | 任意物理地址的十六进制转储（16 字节一行，左 hex 右 ASCII），首行标注所属内存区 |
 | `dump_net` | 网卡与 IP 配置 |
 | `dump_disk` | 块设备：容量、块大小、整盘/分区、型号 |
+| `dump_usb` | USB 设备树：VID/PID、类别、厂商/产品/序列号、接口与端点、设备路径 |
+| `dump_tpm` | TPM 与安全启动：TCG2/TPM 是否在、PCR bank、SecureBoot/SetupMode、PK/KEK/db/dbx |
+| `read_setup` | 固件 Setup 选项的当前值、位置与说明：按主题或模糊词查（忽略大小写标点、任一单词命中、也搜 help 文本与选项标签），报「屏 > 选项 = 值」与固件写的 help |
 | `cpuid` | CPU 厂商、品牌串、指定 leaf 的寄存器 |
 | `run_command` | 一条 UEFI Shell 命令的输出（默认关闭，需 `allow_shell: true`） |
+| `write_file` | 写启动卷上的文本文件：先给差异预览，确认框默认拒绝 |
 
 ## 技能（Skill）
 
@@ -86,9 +93,9 @@ https 需要根证书：DeepSeek 用 DigiCert Global Root G2（`certs/` 已带�
 
 ## 内置命令与快捷键
 
-`/help` 命令一览 · `/model` 列出并切换 provider · `/ctx` 上下文占用 · `/compact` 手动压缩 · `/resume` 恢复上次会话 · `/clear` 清空
+`/help` 命令一览 · `/model` 列出并切换 provider · `/ctx` 上下文占用 · `/compact` 手动压缩 · `/resume` 恢复上次会话（**含工具调用与结果**） · `/clear` 清空 · `/skill` 按技能步骤执行 · `/diag` 一键诊断包 · `/cost` 会话累计 token 与估算花费 · `/remember` 记一句话以后每轮都带 · `/forget` 清掉它
 
-`↑/↓` 输入历史 · `Tab` 补全 · `PgUp/PgDn` 翻页 · `Ctrl+L` 清屏 · `Esc` 取消/退出 · `Shift` 中英切换
+`↑/↓` 输入历史 · `←→/Home/End/Delete` 编辑输入行 · `Tab` 补全 · `PgUp/PgDn` 翻页 · `Ctrl+L` 清屏 · `Esc` 取消/退出 · `Shift` 中英切换
 
 ## 常见问题
 
@@ -108,4 +115,4 @@ https 需要根证书：DeepSeek 用 DigiCert Global Root G2（`certs/` 已带�
 
 ## Pro 版
 
-面向企业批量与合规场景的 Pro 版（受控的 Setup 写回、NVRAM 快照与回滚、启动链审计、批量无人值守与报告汇总、资产台账导出）尚未发布；Free 版与 Pro 版的边界只有一条：**Free 只读，Pro 能改**。有意向请联系作者。
+面向企业批量与合规场景的 Pro 版（受控的 Setup 写回、NVRAM 快照与回滚、启动链审计、批量无人值守与报告汇总、资产台账导出）尚未发布。边界不在"能不能写文件"——Free 版已经有一个写启动卷文件的工具，写出去的东西你随时能删掉改回来；真正的分界是**能不能改固件本身**：Free 版不碰，Pro 版能，且每一样都要确认。有意向请联系作者。

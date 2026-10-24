@@ -1,6 +1,7 @@
 ---
 name: bios-report
 description: 生成这台机器的完整硬件报告（系统/CPU/内存/总线/固件）。用户问"这台机器什么配置""硬件情况""盘点一下"时使用。
+allowed-tools: dump_smbios, cpuid, dump_memmap, dump_pci, dump_acpi, read_skill
 ---
 
 # 硬件报告
@@ -17,6 +18,12 @@ description: 生成这台机器的完整硬件报告（系统/CPU/内存/总线/
 5. `dump_acpi` —— ACPI 表数量与 OEM
 
 如果某一步失败（工具报"不可用"或返回空），跳过它继续，最后在报告里注明缺哪一项。
+
+## 判读
+
+拿到数据后按 `references/thresholds.md` 里的口径判断哪些值算异常。需要时用
+`read_skill`（`name` = `bios-report`，`file` = `thresholds.md`）取那份表——
+它不是每次都要，所以没有放进这里。
 
 ## 输出格式
 

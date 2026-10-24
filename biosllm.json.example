@@ -48,9 +48,21 @@
     "_context_note": "上下文预算，四项都可省略。context_window 是这个模型在服务商那里的窗口（token），写了会让压缩更早发生，小窗口模型必须写；compact_at 是触发压缩的百分比（30-95）；compact_max_tokens 是摘要本身允许的长度——摘要比原文还长就没有意义。",
     "context_window": 0,
     "compact_at": 80,
-    "compact_max_tokens": 800
+    "compact_max_tokens": 800,
+    "_tool_timeout_note": "tool_timeout_sec 是单个工具的看门狗（秒，默认 90）。只有 run_command 会卡住：它把命令交给一个子 Shell 去跑，而子 Shell 会停在那里等键盘——暂停、编辑器、rm/cp 的确认提示都算。这类命令进不来（会被拒绝并提示用 -q），但一条真的不返回的命令没法从外面打断，所以到点就重启机器。写 0 关掉看门狗，代价是卡住就只能断电。",
+    "tool_timeout_sec": 90
   },
-  "_allow_shell_note": "allow_shell 打开 run_command 工具：模型可以让固件跑一条 UEFI Shell 命令（dh、pci、acpiview…）并读回输出。它是唯一能改变机器状态的工具，所以默认关着——提示词说不动的权限才算权限。打开的两个前提：这里写 true，且本程序是被 Shell 启动的（run_command 需要借 Shell 来跑命令）。",
+  "_allow_shell_note": "allow_shell 打开 run_command 工具：模型可以让固件跑一条 UEFI Shell 命令（dh、pci、acpiview…）并读回输出。它是唯一能让机器状态脱离你控制的工具，所以默认关着——提示词说不动的权限才算权限。打开的两个前提：这里写 true，且本程序是被 Shell 启动的（run_command 需要借 Shell 来跑命令）。另一个写入口 write_file 不需要这个开关：它只写启动卷上的文本文件，写之前先看差异、确认框默认拒绝，文件你随时能删。",
   "allow_shell": false,
+  "_remember_note": "AGENTS.md（本文件旁边那个文件，不是这里）由 /remember 写入、/forget 清空，内容每轮请求都会带上。想给模型一条长期约定就在这里说一次，不必每轮重敲；它和上面的 system 不同——改了 system 要重启才生效，AGENTS.md 每次发言都重新读。",
+  "_cost_note": "cost 段给 /cost 用来估算花费。单位是货币单位的百万分之一（micro），因为配置里的数字必须能用整数写：写 0.27 会被 JSON 解析器截断成 0，费用就静默地变成 0 了。0.27 美元 = 270000，1.10 美元 = 1100000。不写这一段就是“这个模型不计费”，/cost 会照实说。",
+  "_cost_cache_note": "缓存价：缓存命中的输入 token 比全价便宜约一个数量级（DeepSeek 是 0.1 元 vs 1 元 / 百万）。不填就按全价算，会高估接近十倍——而本程序每次请求都要重发系统提示词和 13 个工具 schema，正好是缓存该覆盖的部分，所以实际命中率往往不低。",
+  "cost": {
+    "currency": "$",
+    "prompt_per_million": 0,
+    "completion_per_million": 0,
+    "cache_read_per_million": 0,
+    "cache_write_per_million": 0
+  },
   "system": "你是 biosllm，运行在 UEFI 固件里的助手。回答简洁。"
 }
