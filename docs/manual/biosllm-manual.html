@@ -87,7 +87,7 @@
 <div class="kicker">UEFI 产品手册</div>
 <h1>biosllm<span class="badge">FREE 版</span></h1>
 <p class="lead">在 UEFI 固件里直接对话大模型：读硬件、查配置、跑命令，不必先装一个操作系统。</p>
-<p class="meta">版本 0.1.0+218　·　作者 Mike Wu　·　Free 版免费授权个人用户使用</p>
+<p class="meta">版本 0.1.0+259　·　作者 Mike Wu　·　Free 版免费授权个人用户使用</p>
 
 <div class="toc">
   <a href="#what">1　它是什么</a><br>
@@ -197,7 +197,10 @@ biosllm.efi</code></pre>
   <tr><td><code>/resume</code></td><td>恢复上次会话存档，含工具调用与工具返回。</td></tr>
   <tr><td><code>/clear</code></td><td>清空当前会话并删除存档。</td></tr>
   <tr><td><code>/skill &lt;名字&gt; [要求]</code></td><td>按某个技能内的步骤执行；不带参数时列出技能，并提示有多少个因上限未加载。</td></tr>
+  <tr><td><code>/config</code></td><td>打开"设置大模型"对话框：服务地址、API 密钥、模型名称。保存后写回 <code>biosllm.json</code> 并立即生效。标题栏的<b>「设置」按钮</b>做同一件事。</td></tr>
   <tr><td><code>/diag</code></td><td>生成诊断报告写到启动卷（<code>biosllm-diag.txt</code>），api_key 已脱敏。</td></tr>
+  <tr><td><code>/baseline</code></td><td>把当前每一项 Setup 设置的值记到启动卷（<code>biosllm-baseline.txt</code>）。刷 BIOS 或大改设置之前先敲一次。</td></tr>
+  <tr><td><code>/diff</code></td><td>与基线对比：哪些改了、哪些新增、哪些消失、哪些说不准。</td></tr>
   <tr><td><code>/remember &lt;一句话&gt;</code></td><td>写进 <code>AGENTS.md</code>，此后每一轮请求都带上这句话。</td></tr>
   <tr><td><code>/forget</code></td><td>清空 <code>AGENTS.md</code>。</td></tr>
 </table>
@@ -320,7 +323,7 @@ biosllm.efi</code></pre>
   <tr><td><code>read_file</code></td><td><code>path</code></td><td>文本文件内容。</td></tr>
   <tr><td><code>read_env</code></td><td><code>name</code>（可选，子串匹配）</td><td>EFI 变量：名字、GUID、大小、属性。SecureBoot、BootOrder 都在这里。</td></tr>
   <tr><td><code>read_skill</code></td><td><code>name</code>（可选）、<code>file</code>（可选）</td><td>技能的完整说明正文；<code>file</code> 取技能目录下 <code>references/</code> 里的附件。</td></tr>
-  <tr><td><code>dump_smbios</code></td><td>无</td><td>SMBIOS：厂商、机型、序列号、CPU、内存条。</td></tr>
+  <tr><td><code>dump_smbios</code></td><td>无</td><td>SMBIOS：厂商、机型、序列号、CPU（插槽/核心/线程/可升级型号）、各级缓存、PCIe 插槽、内存阵列上限与插槽数、内存条。</td></tr>
   <tr><td><code>dump_memmap</code></td><td>无</td><td>EFI 内存映射：类型、起止、页数。</td></tr>
   <tr><td><code>dump_acpi</code></td><td>无</td><td>ACPI 表目录与关键字段。</td></tr>
   <tr><td><code>dump_hii</code></td><td>无</td><td>固件 Setup 的界面清单：每个包清单的包构成与字节数，以及它声明的表单名字（如 <code>TLS Auth Configuration</code>、<code>OVMF Settings</code>）。只报界面，不报值。</td></tr>
@@ -332,7 +335,7 @@ biosllm.efi</code></pre>
   <tr><td><code>dump_tpm</code></td><td>无</td><td>TPM 与安全启动状态：TCG2/TPM 是否在、活跃 PCR bank 与事件日志、<code>SecureBoot</code>/<code>SetupMode</code>、PK/KEK/db/dbx 是否有密钥，并给出一句结论。</td></tr>
   <tr><td><code>read_setup</code></td><td><code>topic</code>，<code>filter</code>，<code>limit</code>，<code>offset</code></td><td>固件 Setup 选项的当前值、位置与说明：按主题或模糊词查找（忽略大小写标点、任一单词命中，也搜 help 文本与选项标签），报「屏 &gt; 选项 = 值」、可选值、数值范围，并附上固件自己写的 help 文本；没写过的选项报 <code>(not set)</code>。</td></tr>
   <tr><td><code>run_command</code></td><td><code>command</code></td><td>UEFI Shell 输出。默认禁用，需要 <code>allow_shell: true</code>。</td></tr>
-  <tr><td><code>cpuid</code></td><td><code>leaf</code>（十六进制）</td><td>CPUID 各寄存器的值。</td></tr>
+  <tr><td><code>cpuid</code></td><td><code>leaf</code>（十六进制）</td><td>CPU 厂商与品牌串、各级缓存大小、基频/睿频、VT-x 是否存在以及固件是否启用，以及指定 leaf 的原始寄存器。</td></tr>
   <tr><td><code>write_file</code></td><td><code>path</code>、<code>content</code>、<code>dry_run</code>（默认 true）</td><td>写启动卷上的文本文件。第一次只回差异，文件不动；第二次带 <code>dry_run=false</code> 才进确认框。</td></tr>
 </table>
 
@@ -494,6 +497,72 @@ allowed-tools: dump_smbios,cpuid,dump_memmap,dump_pci,dump_disk
   <figcaption>提问只有五个字。工具选择、查哪些词、结论怎么写，都是模型自己决定的——技能负责纪律（试过哪些词要说出来、不许编默认值），工具负责事实。</figcaption>
 </figure>
 
+<h3>不用改 JSON：界面里填三个参数</h3>
+<p>以前换模型要编辑 <code>biosllm.json</code>：找一个 provider、改 <code>base_url</code>、把 <code>sk-REPLACE_ME</code> 换成真密钥。对写这个文件的人是小事，对拿到 U 盘的人是一堵墙——而且填错了要等到几屏之后才看到一个 401。</p>
+
+<p>现在标题栏右侧有一个<b>「设置」按钮</b>，敲 <code>/config</code> 也一样。点开是一个对话框，三个输入框：</p>
+
+<ul>
+  <li><b>服务地址</b>——例如 <code>https://api.deepseek.com</code>。必须带 <code>https://</code>，漏了会当场提示，而不是等你发问之后报"网络不通"。</li>
+  <li><b>API 密钥</b>——输入时显示为圆点。不是为了保密（密钥本来就是你的），是因为一屏 64 个字符的密钥，正是别人求助时被拍进照片里的东西。</li>
+  <li><b>模型名称</b>——例如 <code>deepseek-chat</code>。</li>
+</ul>
+
+<p><b>Tab 或 ↑↓ 换字段，← → 移光标，Enter 保存，Esc 取消。</b>Tab 走完三个输入框后会落到<b>「保存」按钮</b>上（按钮亮起橙色边框），再按 Enter 或空格就是保存——所以这个对话框<b>没有鼠标也能走完</b>。保存后写回启动卷上的 <code>biosllm.json</code>，并且<b>立即生效</b>：系统提示词、<code>/model</code> 的名单、权限开关、欢迎块、网络，全部按新配置重建——不需要重启。</p>
+
+<div class="note"><strong>写回时只改这三个字段。</strong>文件里其他 provider、以及每个 provider 下面那些 <code>_note</code> 说明，全部原样保留。这一点有宿主单测钉着：改完之后整个文件必须还能解析回来，否则对话框会把一个本来能用的配置写坏——而那正是它存在的理由。</div>
+
+<p><b>什么都不改就按保存，文件一个字节都不变。</b>实测：5982 字节进去，5982 字节出来，逐字节相同。三件事都保住了——<b>顶层键的顺序</b>（<code>provider</code> 和 <code>providers</code> 在原来的位置替换，不会被挪到文件末尾）、<b>嵌套对象的换行缩进</b>（<code>request</code>、<code>cost</code> 不会被压成一行）、<b>行尾和结尾换行</b>（原本是 CRLF 就还是 CRLF，原本结尾没有换行就不加）。</p>
+
+<p>为什么在意这个：手写过的配置文件，每按一次保存就多出四十行 diff，看起来就像被改坏了——哪怕值一个都没变。所以这里不满足于"解析回来一样"，而是要求<b>字节一样</b>，三条宿主测试分别钉住键序、行尾、结尾换行。</p>
+
+<div class="note"><strong>但有一个例外要说清楚：如果 <code>biosllm.json</code> 本身已经坏了</strong>（少个逗号、括号不配对），对话框照样会弹出来让你重填，保存时会<b>按内存里的三项重新生成一份最小配置</b>——文件里原有的其他 provider 和注释<b>会丢</b>。所以改之前如果那份文件是你手写的心血，先复制一份。</div>
+
+<p><b>打开时带着上一次的设置。</b>三个字段都会用当前配置预填——地址、模型名，以及那个已经存好的密钥（显示为圆点，因为"我已经配过了"这件事不该让用户自己回忆）。文件里缺哪一项，就只有那一项是空的：比如文件里有地址和模型、只是没填密钥，那么打开对话框只需要补密钥。</p>
+
+<p><b>第一次使用会自己弹出来，而且会说清是为什么。</b>只要满足任一条，开机就会立刻打开这个对话框：没有 <code>biosllm.json</code>、文件解析不了、某个字段是空的、或者密钥还是模板里的 <code>sk-REPLACE_ME</code>。填完保存，下次开机就不再打扰。</p>
+
+<div class="note"><strong>为什么"看着已经配好了"还会弹？</strong>最常见的一种是密钥还是模板里的 <code>sk-REPLACE_ME</code>——地址和模型名都在，只有密钥是占位符，而密钥框是掩码的，屏幕上根本看不出来。所以对话框顶部那行红字会直接点名：<i>"配置里的 API 密钥还是模板占位符 sk-REPLACE_ME，地址和模型名已经有了，只差你自己的密钥。"</i>缺哪一项就点哪一项的名，不会只丢一句"请配置模型"让人自己猜。</div>
+
+<p><b>没有鼠标也能用。</b>如果这台机器上根本没有可用的指针设备（固件不提供，程序自带的 HID 鼠标兜底驱动也没找到鼠标），界面会明说一句：<i>"[鼠标] 这台机器上没有可用的指针设备……全部操作可用键盘：Tab 切换、方向键移动、Enter 确认、Esc 返回。"</i>而不是留一个不动的光标让人以为是程序卡了。</p>
+
+<p>对话框里的提示是红色的那行：<i>"第一次使用：填好这三项就能对话。密钥只保存在这块启动盘上。"</i>——最后半句是实话，密钥明文存在盘上，和配置文件本来就在一起。</p>
+
+<h3>刷完 BIOS 之后，我的设置还在吗</h3>
+<p>这是升级固件后最实际的一个问题：<b>固件升级常常把整个 NVRAM 重置</b>，厂商也会在不声不响地改默认值。BIOS 自己的菜单不会告诉你之前是什么——它只知道现在是什么。</p>
+
+<p>所以做法是<b>先记下来，再对比</b>：</p>
+
+<ul>
+  <li><code>/baseline</code>：把当前每一项设置的值、所在屏、存放位置记到启动卷上的 <code>biosllm-baseline.txt</code>。这是一份<b>抄下来的快照</b>，不引用固件里的任何东西——固件升级会把 HII 结构换掉，盘上这份文件不会。</li>
+  <li><code>/diff</code>：再读一遍当前值，和基线比。</li>
+</ul>
+
+<p>配对有三级，因为固件升级会动其中任何一样：</p>
+
+<ol>
+  <li><b>存放位置</b>（变量 GUID + 偏移 + 宽度）——值实际躺在哪儿，最稳；</li>
+  <li><b>名字</b>（归一化后）——位置挪了但名字没变；</li>
+  <li>都对不上——<b>新增或消失</b>。</li>
+</ol>
+
+<div class="note"><strong>有一档是"不确定"，而且必须留着。</strong>同一个偏移上换了名字，可能是固件把这个位置改作他用。这时报"Serial Port 从 Enabled 变成 PCIe ASPM"是<b>错得看不出错</b>的结论，所以它单列一档，让你自己判断。名字匹配时会自动忽略 <code>(R)</code>、<code>(TM)</code> 这类商标后缀，所以"Intel(R) VT-x"和"Intel VT-x"算同一个。</div>
+
+<p>实测（QEMU，OVMF）：<code>/baseline</code> 记 5 项，改掉其中一项的 VLAN ID 后 <code>/diff</code> 报"<b>[改了] vlan configuration &gt; vlan id: 0x5 → 0x9</b>，未变 4 项、位置变 0、不确定 0、新增 0、消失 0"——正是刷完固件后想知道的那句话。</p>
+
+<h3>能不能升级：答案在固件自己写的上限里</h3>
+<p>"我能加内存吗"、"能换个 CPU 吗"、"能加块显卡吗"——这三件事以前答不了，因为要看的是<b>上限</b>，不是当前装了什么。现在从 SMBIOS 里读出来了：</p>
+
+<ul>
+  <li><b>内存</b>：Type 16 给出<b>最大容量</b>与<b>插槽总数</b>，Type 17 给出每条的容量与所在槽位。两个一减，就是还能加多少、还有几个空槽。</li>
+  <li><b>CPU</b>：Type 4 给出<b>插槽类型</b>与 <code>ProcessorUpgrade</code>（板子接受什么样的处理器），还有核心数、线程数、当前与最高频率。注意这些是<b>板子</b>的说法，不是这颗 CPU 的说法。</li>
+  <li><b>显卡</b>：Type 9 给出每个插槽的 <b>PCIe 代数与宽度</b>，以及 <code>CurrentUsage</code>（占用/空闲）。四个槽只有一个空着，只有这里说得清是哪个。</li>
+</ul>
+
+<p>另外两处顺手补齐的：<b>缓存</b>（Type 7，大小是位域，读成普通整数会把 8 MB 的 L3 说成 32 KB），以及 <b>VT-x 到底开没开</b>——<code>cpuid</code> 现在会读 <code>IA32_FEATURE_CONTROL</code>，这个寄存器是<b>固件</b>写的：CPU 支持 VMX 但固件没允许，报的是"CPU 能，固件没开"，而不是含糊的"没有虚拟化"。这是只有 BIOS 层的工具才拿得到的答案。</p>
+
+<div class="note"><strong>QEMU 里的边界：</strong>Type 7（缓存）与 Type 9（插槽）OVMF 都不发布，所以这两项只在真机上才有内容；VT-x 那条分支在 QEMU 的 TCG 下走不到（不模拟 VMX），只验证了"没有 VT-x"那一支。<b>缓存大小的算术有宿主单测</b>，用的是真实 Skylake 的寄存器值（32 KB L1d / 256 KB L2 / 8 MB L3），因为 leaf 4 没有"大小"字段，四个项都要 +1 再相乘，错一个就得出一个看着合理的错数。</div>
+
 <h3>一条链走通是什么样</h3>
 <p>"U 盘能起动吗"这种问题，答案不在某一个工具里，而要把几件事串起来：盘在不在、启动顺序里有没有它、有没有别的东西把它拦掉。下面是 QEMU 里插着一个带 ESP 的 U 盘时的真实回答：</p>
 
@@ -560,7 +629,7 @@ allowed-tools: dump_smbios,cpuid,dump_memmap,dump_pci,dump_disk
 <p><b>商业用途</b>——随硬件或服务分发、作为收费服务的一部分、在企业环境中批量部署、基于它提供有偿支持——需要事先取得作者的书面授权。</p>
 <p><b>Pro 版</b>面向企业批量与合规场景，规划中的能力是上一节里所有"会写固件"的那几项：受控的 Setup 写回、NVRAM 快照与回滚、启动链审计、批量无人值守与报告汇总、资产台账导出。两个版本共用同一套界面与配置格式。注意边界不在"能不能写文件"——Free 版已经有一个写启动卷文件的工具，它写出去的东西你随时能删掉、改回来；真正的分界是<b>能不能改固件本身</b>：Free 版不碰，Pro 版能，且每一样都要确认。Pro 版尚未发布。</p>
 <p>授权与合作：<b>mikewuping@163.com</b>。</p>
-<p class="meta">本手册对应 biosllm 0.1.0+218。配置、工具清单与截图如有变化，以实际构建为准。</p>
+<p class="meta">本手册对应 biosllm 0.1.0+259。配置、工具清单与截图如有变化，以实际构建为准。</p>
 
 </body>
 </html>

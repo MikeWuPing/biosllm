@@ -23,8 +23,8 @@
 
 | 文件 | 用途 |
 |---|---|
-| `biosllm-boot-0.1.0.218.iso` | 用 Rufus 写入 U 盘（「ISO 镜像模式」），或刻成光盘，开机选 UEFI 启动 |
-| `biosllm-usb-0.1.0.218.zip` | 解压到 FAT32 U 盘根目录（**推荐**：U 盘可写，能填自己的 api_key） |
+| `biosllm-boot-0.1.0.261.iso` | 用 Rufus 写入 U 盘（「ISO 镜像模式」），或刻成光盘，开机选 UEFI 启动 |
+| `biosllm-usb-0.1.0.261.zip` | 解压到 FAT32 U 盘根目录（**推荐**：U 盘可写，能填自己的 api_key） |
 | `biosllm.efi` / `uime.efi` | 只要程序本体时单独取用 |
 | `biosllm-manual.html` | 产品手册（单文件，图文，15 节） |
 
